@@ -37,11 +37,15 @@ int main(int argc, char *argv[]) {
             //tag_NBT item = value;
             //cout << value.ToString() << std::endl;
             //cout << key.ToString();
-            //ofstream farts;
-            //farts.open(key.ToString() + ".nbt");
-            //farts << value.ToString();
-            TagCompound root = getNBT(value.ToString());
-            root.listChildren();
+            ofstream farts;
+            farts.open(key.ToString() + ".nbt");
+            farts << value.ToString();
+            //TagCompound root = getNBT(value.ToString());
+            //int i = 3;
+            //TagCompound *root = getUnnamedCompound(value.ToString(),i);
+            //root->listChildren();
+            parseNBT(value.ToString());
+            //std::cout << root.numChildren();
         }
 
     }

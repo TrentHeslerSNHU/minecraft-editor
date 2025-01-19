@@ -167,7 +167,9 @@ TagString *getString(const std::string &, int &);
 TagList *getList(const std::string &, int &);
 TagCompound *getCompound(const std::string &, int &);
 TagCompound *getUnnamedCompound(const std::string &, int &);
+TagEnd *getEnd(int &);
 
 //======================= The "Main Event" =======================
 TagCompound getNBT(const std::string);
+void parseNBT(const std::string);
 #endif
