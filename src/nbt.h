@@ -171,5 +171,5 @@ TagEnd *getEnd(int &);
 
 //======================= The "Main Event" =======================
 TagCompound getNBT(const std::string);
-void parseNBT(const std::string);
+TagCompound parseNBT(const std::string);
 #endif

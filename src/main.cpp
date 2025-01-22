@@ -44,8 +44,9 @@ int main(int argc, char *argv[]) {
             //int i = 3;
             //TagCompound *root = getUnnamedCompound(value.ToString(),i);
             //root->listChildren();
-            parseNBT(value.ToString());
-            //std::cout << root.numChildren();
+            TagCompound root = parseNBT(value.ToString());
+            //std::cout << root.numChildren() << std::endl;
+            root.listChildren();
         }
 
     }

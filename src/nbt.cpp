@@ -33,11 +33,11 @@ void TagCompound::listChildren() {
                 if(nextTag->getType() == 9){
                     TagList *lstPtr = static_cast<TagList *>(nextTag);
                     std::cout << "(" << lstPtr->numChildren() << ")\n";
-                    lstPtr->listChildren();
+                    //lstPtr->listChildren();
                 } else if (nextTag->getType() == 10) {
                     TagCompound *cmpPtr = static_cast<TagCompound *>(nextTag);
                     std::cout << "(" << cmpPtr->numChildren() << ")\n";
-                    cmpPtr->listChildren();
+                    //cmpPtr->listChildren();
                 } else {
                     std::cout << std::endl;
                 }
@@ -293,7 +293,7 @@ TagByte *getByte(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     if(PRINT_PARSE){
         std::cout << "BYTE: " << name << " = " << ((unsigned char)Data[i])/1 << "\n";
@@ -311,7 +311,7 @@ TagShort *getShort(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     if(PRINT_PARSE){
         std::cout << "SHORT: " << name << " = " << convertToShort(Data.substr(i,2)) << "\n";
@@ -330,7 +330,7 @@ TagInt *getInt(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     int payload = convertToInt(Data);
     if(PRINT_PARSE){
@@ -350,7 +350,7 @@ TagLong *getLong(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     long payload = convertToLong(Data);
     if(PRINT_PARSE){
@@ -370,7 +370,7 @@ TagFloat *getFloat(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     float payload = convertToFloat(Data);
     if(PRINT_PARSE){
@@ -390,7 +390,7 @@ TagDouble *getDouble(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     double payload = convertToDouble(Data);
     if(PRINT_PARSE){
@@ -411,7 +411,7 @@ TagByteArray *getByteArray(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     //long payload = convertToLong(Data);
     if(PRINT_PARSE){
@@ -432,7 +432,7 @@ TagString *getString(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];   
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     int strlen = Data[i];
     i++;
@@ -457,7 +457,7 @@ TagList *getList(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
     
     int itemType = Data[i];
@@ -546,7 +546,7 @@ TagCompound *getCompound(const std::string &Data, int &i) {
     i++;
     int nlen = Data[i];
     i+=2;
-    std::string name = Data.substr(i,nlen);
+    std::string name = Data.substr(i,nlen+1);
     i+=nlen;
 
     TagCompound *root = new TagCompound();
@@ -817,256 +817,289 @@ TagCompound getNBT(const std::string Data) {
     }
 }
 
-void parseNBT(const std::string data){
+TagByte *parseByte(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    unsigned char payload = (unsigned char)data[i];
+    std::cout << "BYTE: " << name << " = " << payload/1 << std::endl;
+    return new TagByte(name,payload);
+}
+
+TagShort *parseShort(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    short shortPayload=convertToShort(data.substr(i,2));
+    std::cout << "SHORT: " << name << " = " << shortPayload << std::endl;
+    i++; //Skip the second byte of the short
+    return new TagShort(name,shortPayload);
+}
+
+TagInt *parseInt(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    int intPayload = convertToInt(data.substr(i,4));
+    std::cout << "INT: " << name << " = " << intPayload << std::endl;
+    i+=3; //Skip the final three bytes of the int
+    return new TagInt(name,intPayload);
+}
+
+TagLong *parseLong(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    long longPayload = convertToLong(data.substr(i,8));
+    std::cout << "LONG: " << name << " = " << longPayload << std::endl;
+    i+=7; //Skip the final 7 bytes of the long
+    return new TagLong(name,longPayload);
+}
+
+TagFloat *parseFloat(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    float floatPayload = convertToFloat(data.substr(i,4));
+    std::cout << "FLOAT: " << name << " = " << floatPayload << std::endl;
+    i+=3; //Skip the final 3 bytes of the float
+    return new TagFloat(name,floatPayload);
+}
+
+TagDouble *parseDouble(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    double doublePayload = convertToDouble(data.substr(i,8));
+    std::cout << "DOUBLE: " << name << " = " << doublePayload << std::endl;
+    i+=7; //Skip the final 7 bytes of the double
+    return new TagDouble(name,doublePayload);
+}
+
+//FIXME: Need to investigate how an NBT byte array works and redo this
+TagByteArray *parseByteArray(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    for(int j=0; j < int(data[i]); j++){
+        std::cout << data[i+j];
+    }
+    //i+=someamount;
+    std::cout << "BYTEARRAY: " << std::endl;
+    return new TagByteArray(name);
+}
+
+TagString *parseString(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen+1;
+    int payloadlen = int(data[i]);
+    i++;
+    std::string payload = data.substr(i,payloadlen+1);
+    i+=payloadlen;
+    std::cout << "STRING: " << name << " = \"" << payload << "\"" << std::endl;
+    return new TagString(name,payload);
+}
+
+TagList *parseList(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen;
+    i++;
+    int tagType = int(data[i]);
+    i++;
+    int tagCount = convertToInt(data.substr(i,4));
+    TagList *payload = new TagList(name,tagType,tagCount);
+    i+=3;
+    std::cout << "LIST: " << name << std::endl;
+    switch (tagType)
+    {
+    case 1:
+        for(int j=0; j < tagCount; j++){
+            std::cout << "BYTE: " << data[i+j] << std::endl;
+            payload->addChild(new TagByte("",data[i+j]));
+        }
+        i+=tagCount;
+        break;
+    case 2:
+        //TODO: Add loop
+        for(int j=0; j < tagCount; j++){
+            short shortPayload = convertToShort(data.substr(i+(j*2),2));
+            std::cout << "SHORT: " << shortPayload  << std::endl;
+            payload->addChild(new TagShort("",shortPayload));
+        }
+        i+=(tagCount*2);
+        break;
+    case 3:
+        //TODO: Add loop
+        for(int j=0; j < tagCount; j++){
+            int intPayload = convertToInt(data.substr(i+(j*4),4));
+            std::cout << "INT: " << intPayload << std::endl;
+            payload->addChild(new TagInt("",intPayload));
+        }
+        i+=(tagCount*4);
+        break;
+    case 4:
+        //TODO: Add loop
+        for(int j=0; j < tagCount; j++){
+            long longPayload = convertToLong(data.substr(i+(j*8),8));
+            std::cout << "LONG: " << longPayload << std::endl;
+            payload->addChild(new TagLong("",longPayload));
+        }
+        i+=(tagCount*8);
+        break;
+    case 5:
+        //TODO: Remove add/subtract 3 (qty should be 32-bit int?)
+        i+=3;
+        for(int j=0; j < tagCount; j++){
+            float floatPayload = convertToFloatMBE(data.substr(i+(j*4),4));
+            std::cout << "FLOAT: " << floatPayload << std::endl;
+            payload->addChild(new TagFloat("",floatPayload));
+        }
+        i-=3;
+        i+=(tagCount*4);
+        break;
+    case 6:
+        //TODO: Add loop
+        for(int j=0; j < tagCount; j++){
+            double doublePayload = convertToDouble(data.substr(i+(j*8),8));
+            std::cout << "DOUBLE: " << doublePayload << std::endl;
+            payload->addChild(new TagDouble("",doublePayload));
+        }
+        i+=(tagCount*8);
+        break;
+    case 7:
+        //TODO: Add loop
+        break;
+    case 8:
+        {
+            i++;
+            for(int k=0; k<tagCount; k++)
+            {
+                std::cout << "STRING: ";
+                int strSize = int(data[i]);
+                i+=2;
+                std::string stringPayload = data.substr(i,strSize);
+                std::cout << stringPayload << std::endl;
+                payload->addChild(new TagString("",stringPayload));
+                i+=strSize;
+            }
+            i--;
+            break;
+        }
+    default:
+        break;
+    }
+    return payload;
+}
+
+TagCompound parseNBT(const std::string data){
 
     TagCompound *root = new TagCompound();
 
     for(int i=3; i < data.length(); i++){
-        std::string name = "";
-        int nlen = 0;
-        short shortPayload = 0;
-        int intPayload = 0;
-        long longPayload = 0;
-        float floatPayload = 0;
-        double doublePayload = 0;
-        std::string stringPayload = "";
 
         switch (data[i])
         {
             case 0: //End
             {
                 std::cout << "[END]" << std::endl;
+                root->addChild(new TagEnd());
                 break;
             }
 
             case 1: //Byte (or boolean, or any data that can be stored in a single byte)
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseByte(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                unsigned char payload = (unsigned char)data[i];
-                std::cout << "BYTE: " << name << " = " << payload/1 << std::endl;
-                root->addChild(new TagByte(name,payload));
-                break;}
 
             case 2: //Short
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseShort(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                shortPayload=convertToShort(data.substr(i,2));
-                std::cout << "SHORT: " << name << " = " << shortPayload << std::endl;
-                root->addChild(new TagShort(name,shortPayload));
-                i++; //Skip the second byte of the short
-                break;}
             
             case 3: //Int
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseInt(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                intPayload = convertToInt(data.substr(i,4));
-                std::cout << "INT: " << name << " = " << intPayload << std::endl;
-                root->addChild(new TagInt(name,intPayload));
-                i+=3; //Skip the final three bytes of the int
-                break;}
 
             case 4: //Long
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseLong(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                longPayload = convertToLong(data.substr(i,8));
-                std::cout << "LONG: " << name << " = " << longPayload << std::endl;
-                root->addChild(new TagLong(name,longPayload));
-                i+=7; //Skip the final 7 bytes of the long
-                break;}
 
             case 5: //Float
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseFloat(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                floatPayload = convertToFloat(data.substr(i,4));
-                std::cout << "FLOAT: " << name << " = " << floatPayload << std::endl;
-                root->addChild(new TagFloat(name,floatPayload));
-                i+=3; //Skip the final 3 bytes of the float
-                break;}
 
             case 6: //Double
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseDouble(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                doublePayload = convertToDouble(data.substr(i,8));
-                std::cout << "DOUBLE: " << name << " = " << doublePayload << std::endl;
-                root->addChild(new TagDouble(name,doublePayload));
-                i+=7; //Skip the final 7 bytes of the double
-                break;}
 
             case 7: //Byte Array
-            //FIXME: Need to investigate how an NBT byte array works and redo this
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseByteArray(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                for(int j=0; j < int(data[i]); j++){
-                    std::cout << data[i+j];
-                }
-                //i+=someamount;
-                std::cout << "BYTEARRAY: " << std::endl;
-                root->addChild(new TagByteArray(name));
-                break;}
 
             case 8: //String
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    root->addChild(parseString(data,i));
+                    break;
                 }
-                i+=nlen+1;
-                std::string payload = "";
-                int payloadlen = int(data[i]);
-                i++;
-                for(int j=0; j <= payloadlen; j++){
-                    payload += data[i+j];
-                }
-                i+=payloadlen;
-                std::cout << "STRING: " << name << " = \"" << payload << "\"" << std::endl;
-                root->addChild(new TagString(name,payload));
-                break;}
 
             case 9: //List
-                {i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
-                }
-                i+=nlen;
-                i++;
-                int tagType = int(data[i]);
-                i++;
-                int tagCount = 0;
-                unsigned char bytes[] = {data[i], data[i+1], data[i+2], data[i+3]};
-                memcpy(&tagCount, &bytes, sizeof(int));
-                root->addChild(new TagList(name,tagType,tagCount));
-                i+=3;
-                std::cout << "LIST: " << name << std::endl;
-                switch (tagType)
                 {
-                case 1:
-                    for(int j=0; j < tagCount; j++){
-                        std::cout << "BYTE: " << data[i+j] << std::endl;
-                    }
-                    i+=tagCount;
-                    break;
-                case 2:
-                    //TODO: Add loop
-                    for(int j=0; j < tagCount; j++){
-                        std::cout << "SHORT: " << convertToShort(data.substr(i+(j*2),2)) << std::endl;
-                    }
-                    i+=(tagCount*2);
-                    break;
-                case 3:
-                    //TODO: Add loop
-                    for(int j=0; j < tagCount; j++){
-                        std::cout << "INT: " << convertToInt(data.substr(i+(j*4),4)) << std::endl;
-                    }
-                    i+=(tagCount*4);
-                    break;
-                case 4:
-                    //TODO: Add loop
-                    for(int j=0; j < tagCount; j++){
-                        std::cout << "LONG: " << convertToLong(data.substr(i+(j*8),8)) << std::endl;
-                    }
-                    i+=(tagCount*8);
-                    break;
-                case 5:
-                    //TODO: Remove add/subtract 3 (qty should be 32-bit int?)
-                    i+=3;
-                    for(int j=0; j < tagCount; j++){
-                        std::cout << "FLOAT: " << convertToFloatMBE(data.substr(i+(j*4),4)) << std::endl;
-                    }
-                    i-=3;
-                    i+=(tagCount*4);
-                    break;
-                case 6:
-                    //TODO: Add loop
-                    for(int j=0; j < tagCount; j++){
-                        std::cout << "DOUBLE: " << convertToDouble(data.substr(i+(j*8),8)) << std::endl;
-                    }
-                    i+=(tagCount*8);
-                    break;
-                case 7:
-                    //TODO: Add loop
-                    break;
-                case 8:
-                    {
-                        i++;
-                        for(int k=0; k<tagCount; k++)
-                        {
-                            std::cout << "STRING: ";
-                            int strSize = int(data[i]);
-                            i+=2;
-                            for(int l=0; l<strSize; l++){
-                                std::cout << data[i+l];
-                            }
-                            std::cout << std::endl;
-                            i+=strSize;
-                        }
-                        i--;
-                        break;
-                    }
-                default:
+                    root->addChild(parseList(data,i));
                     break;
                 }
-                break;}
 
             case 10: //Compound
-            {
-                i++;
-                nlen = int(data[i]);
-                name = "";
-                i++;
-                for(int j=0; j <= nlen; j++){
-                    name += data[i+j];
+                {
+                    i++;
+                    int nlen = int(data[i]);
+                    i++;
+                    std::string name = data.substr(i,nlen+1);
+                    i+=nlen;
+                    std::cout << "COMPOUND: " << name << std::endl;
+                    
+                    break;
                 }
-                i+=nlen;
-                std::cout << "COMPOUND: " << name << std::endl;
-                break;
-            }
 
             //TODO: Add 11 & 12 (Int Array and Long Array)
 
@@ -1077,4 +1110,6 @@ void parseNBT(const std::string data){
                 break;}
         }
     }
+
+    return *root;
 }

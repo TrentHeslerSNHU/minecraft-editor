@@ -18,5 +18,5 @@ find_library (LEVELDB
 find_library (SNAPPY
     NAMES snappy libsnappy) # what to look for
 
-target_link_libraries(main PRIVATE Threads::Threads ${LEVELDB} ${SNAPPY})
+target_link_libraries(minecraft-editor PRIVATE Threads::Threads ${LEVELDB} ${SNAPPY})
 
