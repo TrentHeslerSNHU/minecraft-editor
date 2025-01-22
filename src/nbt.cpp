@@ -57,8 +57,11 @@ int TagCompound::numChildren(){
         while(nextTag != nullptr){
             i++;
             if(nextTag->getType() == 10){
-                TagCompound *farts = static_cast<TagCompound *>(nextTag);
-                i+=farts->numChildren();
+                TagCompound *cmpPtr = static_cast<TagCompound *>(nextTag);
+                i+=cmpPtr->numChildren();
+            } else if (nextTag->getType() == 9) {
+                TagList *listPtr = static_cast<TagList *>(nextTag);
+                i+=listPtr->numChildren();
             }
             nextTag = nextTag->getNext();
         }
@@ -86,9 +89,11 @@ int i = 0;
         while(nextTag != nullptr){
             i++;
             if(nextTag->getType() == 10){
-                TagCompound *farts = static_cast<TagCompound *>(nextTag);
-                i+=farts->numChildren();
-                i--;
+                TagCompound *cmpPtr = static_cast<TagCompound *>(nextTag);
+                i+=cmpPtr->numChildren();
+            } else if (nextTag->getType() == 9){
+                TagList *listPtr = static_cast<TagList *>(nextTag);
+                i+=listPtr->numChildren();
             }
             nextTag = nextTag->getNext();
         }
@@ -152,7 +157,7 @@ void TagList::listChildren(){
 
             case 9:
             {
-                std::cout << "LIST: " << currentItem->getName() << std::endl;
+                std::cout << "LIST: " << currentItem->getName() << "(" << ((TagList *)currentItem)->numChildren() << ")" << std::endl;
                 break;
             }
 
@@ -1014,10 +1019,202 @@ TagList *parseList(const std::string &data, int &i)
             i--;
             break;
         }
+
+    case 10:
+        {
+            for(int k=0; k<tagCount; k++)
+            {
+                std::cout << "COMPOUND" << std::endl;
+                i++;
+                payload->addChild(parseUnnamedCompound(data,i));
+            }
+        }
     default:
         break;
     }
     return payload;
+}
+
+TagCompound *parseCompound(const std::string &data, int &i)
+{
+    i++;
+    int nlen = int(data[i]);
+    i++;
+    std::string name = data.substr(i,nlen+1);
+    i+=nlen;
+    std::cout << "COMPOUND: " << name << std::endl;
+    i++;
+
+    TagCompound *root = new TagCompound(name);
+
+    for(i; i < data.length(); i++){
+
+        switch (data[i])
+        {
+            case 0: //End
+            {
+                std::cout << "[END]" << std::endl;
+                //root->addChild(new TagEnd());
+                return root;
+                break;
+            }
+
+            case 1: //Byte (or boolean, or any data that can be stored in a single byte)
+                {
+                    root->addChild(parseByte(data,i));
+                    break;
+                }
+
+            case 2: //Short
+                {
+                    root->addChild(parseShort(data,i));
+                    break;
+                }
+            
+            case 3: //Int
+                {
+                    root->addChild(parseInt(data,i));
+                    break;
+                }
+
+            case 4: //Long
+                {
+                    root->addChild(parseLong(data,i));
+                    break;
+                }
+
+            case 5: //Float
+                {
+                    root->addChild(parseFloat(data,i));
+                    break;
+                }
+
+            case 6: //Double
+                {
+                    root->addChild(parseDouble(data,i));
+                    break;
+                }
+
+            case 7: //Byte Array
+                {
+                    root->addChild(parseByteArray(data,i));
+                    break;
+                }
+
+            case 8: //String
+                {
+                    root->addChild(parseString(data,i));
+                    break;
+                }
+
+            case 9: //List
+                {
+                    root->addChild(parseList(data,i));
+                    break;
+                }
+
+            case 10: //Compound
+                {
+                    root->addChild(parseCompound(data,i));
+                    break;
+                }
+
+            //TODO: Add 11 & 12 (Int Array and Long Array)
+
+            default:
+                {std::cout << "I don't know how to handle a tag of type [" << data[i] << "]!" << std::endl;
+                std::cout << "(encountered at position i=" << i << ")" << std::endl;
+                exit(1);
+                break;}
+        }
+    }
+}
+
+TagCompound *parseUnnamedCompound(const std::string &data, int &i)
+{
+    TagCompound *root = new TagCompound();
+
+    for(i; i < data.length(); i++){
+
+        switch (data[i])
+        {
+            case 0: //End
+            {
+                std::cout << "[END]" << std::endl;
+                //root->addChild(new TagEnd());
+                return root;
+                break;
+            }
+
+            case 1: //Byte (or boolean, or any data that can be stored in a single byte)
+                {
+                    root->addChild(parseByte(data,i));
+                    break;
+                }
+
+            case 2: //Short
+                {
+                    root->addChild(parseShort(data,i));
+                    break;
+                }
+            
+            case 3: //Int
+                {
+                    root->addChild(parseInt(data,i));
+                    break;
+                }
+
+            case 4: //Long
+                {
+                    root->addChild(parseLong(data,i));
+                    break;
+                }
+
+            case 5: //Float
+                {
+                    root->addChild(parseFloat(data,i));
+                    break;
+                }
+
+            case 6: //Double
+                {
+                    root->addChild(parseDouble(data,i));
+                    break;
+                }
+
+            case 7: //Byte Array
+                {
+                    root->addChild(parseByteArray(data,i));
+                    break;
+                }
+
+            case 8: //String
+                {
+                    root->addChild(parseString(data,i));
+                    break;
+                }
+
+            case 9: //List
+                {
+                    root->addChild(parseList(data,i));
+                    break;
+                }
+
+            case 10: //Compound
+                {
+                    root->addChild(parseCompound(data,i));
+                    break;
+                }
+
+            //TODO: Add 11 & 12 (Int Array and Long Array)
+
+            default:
+                {std::cout << "I don't know how to handle a tag of type [" << data[i] << "]!" << std::endl;
+                std::cout << "(encountered at position i=" << i << ")" << std::endl;
+                exit(1);
+                break;}
+        }
+    }
 }
 
 TagCompound parseNBT(const std::string data){
@@ -1091,13 +1288,7 @@ TagCompound parseNBT(const std::string data){
 
             case 10: //Compound
                 {
-                    i++;
-                    int nlen = int(data[i]);
-                    i++;
-                    std::string name = data.substr(i,nlen+1);
-                    i+=nlen;
-                    std::cout << "COMPOUND: " << name << std::endl;
-                    
+                    root->addChild(parseCompound(data,i));
                     break;
                 }
 

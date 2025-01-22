@@ -169,6 +169,18 @@ TagCompound *getCompound(const std::string &, int &);
 TagCompound *getUnnamedCompound(const std::string &, int &);
 TagEnd *getEnd(int &);
 
+TagByte *parseByte(const std::string &, int &);
+TagShort *parseShort(const std::string &, int &);
+TagInt *parseInt(const std::string &, int &);
+TagLong *parseLong(const std::string &, int &);
+TagFloat *parseFloat(const std::string &, int &);
+TagDouble *parseDouble(const std::string &, int &);
+TagByteArray *parseByteArray(const std::string &, int &);
+TagString *parseString(const std::string &, int &);
+TagList *parseList(const std::string &, int &);
+TagCompound *parseCompound(const std::string &, int &);
+TagCompound *parseUnnamedCompound(const std::string &, int &);
+
 //======================= The "Main Event" =======================
 TagCompound getNBT(const std::string);
 TagCompound parseNBT(const std::string);
