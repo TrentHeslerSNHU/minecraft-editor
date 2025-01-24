@@ -33,13 +33,13 @@ void TagCompound::listChildren() {
                 if(nextTag->getType() == 9){
                     TagList *lstPtr = static_cast<TagList *>(nextTag);
                     std::cout << "(" << lstPtr->numChildren() << ")\n";
-                    //lstPtr->listChildren();
+                    lstPtr->listChildren();
                 } else if (nextTag->getType() == 10) {
                     TagCompound *cmpPtr = static_cast<TagCompound *>(nextTag);
                     std::cout << "(" << cmpPtr->numChildren() << ")\n";
-                    //cmpPtr->listChildren();
+                    cmpPtr->listChildren();
                 } else {
-                    std::cout << std::endl;
+                    std::cout << " = " << nextTag->getPayload() << std::endl;
                 }
             } else {
                 std::cout << "[END]" << std::endl;
@@ -109,62 +109,71 @@ void TagList::listChildren(){
             {
             case 1:
             {
-                std::cout << "BYTE: " << currentItem->getName() << std::endl;
+                std::cout << "BYTE: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
             
             case 2:
             {
-                std::cout << "SHORT: " << currentItem->getName() << std::endl;
+                std::cout << "SHORT: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
 
             case 3:
             {
-                std::cout << "INT: " << currentItem->getName() << std::endl;
+                std::cout << "INT: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
 
             case 4:
             {
-                std::cout << "LONG: " << currentItem->getName() << std::endl;
+                std::cout << "LONG: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
 
             case 5:
             {
-                std::cout << "FLOAT: " << currentItem->getName() << std::endl;
+                std::cout << "FLOAT: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
 
             case 6:
             {
-                std::cout << "DOUBLE: " << currentItem->getName() << std::endl;
+                std::cout << "DOUBLE: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
 
             case 7:
             {
-                std::cout << "BYTEARRAY: " << currentItem->getName() << std::endl;
+                std::cout << "BYTEARRAY: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
 
             case 8:
             {
-                std::cout << "STRING: " << currentItem->getName() << std::endl;
+                std::cout << "STRING: " << currentItem->getName();
+                std::cout << " = " << currentItem->getPayload() << std::endl;
                 break;
             }
 
             case 9:
             {
                 std::cout << "LIST: " << currentItem->getName() << "(" << ((TagList *)currentItem)->numChildren() << ")" << std::endl;
+                ((TagList *)currentItem)->listChildren();
                 break;
             }
 
             case 10:
             {
                 std::cout << "COMPOUND: " << currentItem->getName() << "(" << ((TagCompound *)currentItem)->numChildren() << ")" << std::endl;
-                reinterpret_cast<TagCompound *>(currentItem)->listChildren();
+                ((TagCompound *)currentItem)->listChildren();
                 break;
             }
             //TODO: Eventually add types 11 and 12 (IntArray and LongArray)

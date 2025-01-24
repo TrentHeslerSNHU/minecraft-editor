@@ -30,6 +30,7 @@ class NbtTag {
         NbtTag* getNext(){return this->Next;}
         void setNext(NbtTag *newNext){this->Next = newNext;}
         std::string getName(){return *(this->Name);}
+        virtual const std::string getPayload() = 0;
     protected:
         short *TagType = nullptr;
         std::string *Name = nullptr;
@@ -41,6 +42,7 @@ class NbtTag {
 class TagEnd : public NbtTag {
     public:
         TagEnd(){this->TagType=new short(0); this->Name=new std::string("");}
+        const std::string getPayload() {return "";};
 };
 
 //TYPE 1: Byte
@@ -48,8 +50,9 @@ class TagByte : public NbtTag {
     public:
         TagByte(){this->TagType = new short(1); this->Name=new std::string("TagByte");}
         TagByte(const std::string, unsigned char);
+        const std::string getPayload() {return std::to_string(*Payload);};
     private:
-        unsigned char *Payload;
+        unsigned char *Payload = nullptr;
 };
 
 //TYPE 2: Short
@@ -57,8 +60,9 @@ class TagShort : public NbtTag {
     public:
         TagShort(){this->TagType = new short(2); this->Name=new std::string("TagShort");}
         TagShort(const std::string, short);
+        const std::string getPayload() {return std::to_string(*Payload);};
     private:
-        short *Payload;
+        short *Payload = nullptr;
 };
 
 //TYPE 3: Int
@@ -66,8 +70,9 @@ class TagInt : public NbtTag {
     public:
         TagInt(){this->TagType = new short(3); this->Name=new std::string("TagInt");}
         TagInt(const std::string, int);
+        const std::string getPayload() {return std::to_string(*Payload);};
     private:
-        int *Payload;
+        int *Payload = nullptr;
 };
 
 //TYPE 4: Long
@@ -75,8 +80,9 @@ class TagLong : public NbtTag {
     public:
         TagLong(){this->TagType = new short(4); this->Name=new std::string("TagLong");}
         TagLong(const std::string, long);
+        const std::string getPayload() {return std::to_string(*Payload);};
     private:
-        long *Payload;
+        long *Payload = nullptr;
 };
 
 //TYPE 5: Float
@@ -84,8 +90,9 @@ class TagFloat : public NbtTag {
     public:
         TagFloat(){this->TagType = new short(5); this->Name=new std::string("TagFloat");}
         TagFloat(const std::string, float);
+        const std::string getPayload() {return std::to_string(*Payload);};
     private:
-        float *Payload;
+        float *Payload = nullptr;
 };
 
 //TYPE 6: Double
@@ -93,8 +100,9 @@ class TagDouble : public NbtTag {
     public:
         TagDouble(){this->TagType = new short(6); this->Name=new std::string("TagDouble");}
         TagDouble(const std::string, double);
+        const std::string getPayload() {return std::to_string(*Payload);};
     private:
-        double *Payload;
+        double *Payload = nullptr;
 };
 
 //TYPE 7: Byte Array
@@ -102,9 +110,10 @@ class TagByteArray : public NbtTag {
     public:
         TagByteArray(){this->TagType = new short(7); this->Name=new std::string("TagByteArray");}
         TagByteArray(const std::string);
+        const std::string getPayload() {return std::to_string(*Payload);};
     private:
-        int *Length;
-        unsigned char *Payload;
+        int *Length = 0;
+        unsigned char *Payload = nullptr;
 };
 
 //TYPE 8: String
@@ -112,7 +121,7 @@ class TagString : public NbtTag {
     public:
         TagString(){this->TagType = new short(8); this->Name=new std::string("TagString");}
         TagString(const std::string, const std::string);
-        std::string getPayload(){return *Payload;}
+        const std::string getPayload(){return *Payload;}
     private:
         std::string *Payload = nullptr;
 };
@@ -125,6 +134,7 @@ class TagList : public NbtTag {
         void addChild(NbtTag *);
         void listChildren();
         int numChildren();
+        const std::string getPayload() {return "";};
     private:
         unsigned char *itemType;
         int *itemQty;
@@ -139,6 +149,7 @@ class TagCompound : public NbtTag {
         void addChild(NbtTag *);
         void listChildren();
         int numChildren();
+        const std::string getPayload() {return "";};
     private:
         NbtTag *Parent = nullptr;
         NbtTag *Children = nullptr;
