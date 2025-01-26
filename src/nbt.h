@@ -21,8 +21,6 @@ enum tagType {
     CompoundTag
 };
 
-//TODO: Add getPayload functions! :)
-
 //Abstract class
 class NbtTag {
     public:

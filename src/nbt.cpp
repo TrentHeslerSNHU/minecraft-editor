@@ -3,6 +3,20 @@
 bool PRINT_PARSE=true;
 bool PRINT_TAG_BOUNDS=true;
 
+/*********************
+ * Current Progress: *
+ * Create: ✘         *
+ *   Read: ✔         *
+ * Update: ✘         *
+ * Delete: ✘         *
+ ********************/
+
+// Next order of business: get ByteArrays figured out
+// Second order of business: make a function to re-print tags as NBT string
+// (This is the first step towards creating, deleting, and updating)
+
+//TODO: (Eventually) Remove printed output from parse functions
+
 /*
 Class member function definitions
 */
@@ -417,7 +431,7 @@ TagDouble *getDouble(const std::string &Data, int &i) {
     return new TagDouble(name,payload);
 }
 
-//FIXME: Redo this once you know what a bytearray looks like
+//FIXME: Redo this after researching bytearray tags
 TagByteArray *getByteArray(const std::string &Data, int &i) {
     if(PRINT_TAG_BOUNDS){
         std::cout << "<" << i << ">\n";
@@ -835,9 +849,9 @@ TagByte *parseByte(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     unsigned char payload = (unsigned char)data[i];
     std::cout << "BYTE: " << name << " = " << payload/1 << std::endl;
     return new TagByte(name,payload);
@@ -847,9 +861,9 @@ TagShort *parseShort(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     short shortPayload=convertToShort(data.substr(i,2));
     std::cout << "SHORT: " << name << " = " << shortPayload << std::endl;
     i++; //Skip the second byte of the short
@@ -860,9 +874,9 @@ TagInt *parseInt(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     int intPayload = convertToInt(data.substr(i,4));
     std::cout << "INT: " << name << " = " << intPayload << std::endl;
     i+=3; //Skip the final three bytes of the int
@@ -873,9 +887,9 @@ TagLong *parseLong(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     long longPayload = convertToLong(data.substr(i,8));
     std::cout << "LONG: " << name << " = " << longPayload << std::endl;
     i+=7; //Skip the final 7 bytes of the long
@@ -886,22 +900,23 @@ TagFloat *parseFloat(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     float floatPayload = convertToFloat(data.substr(i,4));
     std::cout << "FLOAT: " << name << " = " << floatPayload << std::endl;
     i+=3; //Skip the final 3 bytes of the float
     return new TagFloat(name,floatPayload);
 }
 
+//TODO: Double check endianness
 TagDouble *parseDouble(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     double doublePayload = convertToDouble(data.substr(i,8));
     std::cout << "DOUBLE: " << name << " = " << doublePayload << std::endl;
     i+=7; //Skip the final 7 bytes of the double
@@ -913,9 +928,9 @@ TagByteArray *parseByteArray(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     for(int j=0; j < int(data[i]); j++){
         std::cout << data[i+j];
     }
@@ -928,9 +943,9 @@ TagString *parseString(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
-    i+=nlen+1;
+    i+=2;
+    std::string name = data.substr(i,nlen);
+    i+=nlen;
     int payloadlen = int(data[i]);
     i++;
     std::string payload = data.substr(i,payloadlen+1);
@@ -943,10 +958,9 @@ TagList *parseList(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
+    i+=2;
+    std::string name = data.substr(i,nlen);
     i+=nlen;
-    i++;
     int tagType = int(data[i]);
     i++;
     int tagCount = convertToInt(data.substr(i,4));
@@ -963,7 +977,6 @@ TagList *parseList(const std::string &data, int &i)
         i+=tagCount;
         break;
     case 2:
-        //TODO: Add loop
         for(int j=0; j < tagCount; j++){
             short shortPayload = convertToShort(data.substr(i+(j*2),2));
             std::cout << "SHORT: " << shortPayload  << std::endl;
@@ -972,7 +985,6 @@ TagList *parseList(const std::string &data, int &i)
         i+=(tagCount*2);
         break;
     case 3:
-        //TODO: Add loop
         for(int j=0; j < tagCount; j++){
             int intPayload = convertToInt(data.substr(i+(j*4),4));
             std::cout << "INT: " << intPayload << std::endl;
@@ -981,7 +993,6 @@ TagList *parseList(const std::string &data, int &i)
         i+=(tagCount*4);
         break;
     case 4:
-        //TODO: Add loop
         for(int j=0; j < tagCount; j++){
             long longPayload = convertToLong(data.substr(i+(j*8),8));
             std::cout << "LONG: " << longPayload << std::endl;
@@ -990,7 +1001,7 @@ TagList *parseList(const std::string &data, int &i)
         i+=(tagCount*8);
         break;
     case 5:
-        //TODO: Remove add/subtract 3 (qty should be 32-bit int?)
+    // Not sure why we add and subtract three here, but it works
         i+=3;
         for(int j=0; j < tagCount; j++){
             float floatPayload = convertToFloatMBE(data.substr(i+(j*4),4));
@@ -1000,8 +1011,8 @@ TagList *parseList(const std::string &data, int &i)
         i-=3;
         i+=(tagCount*4);
         break;
+    //TODO: Check endianness and offset for parsing doubles
     case 6:
-        //TODO: Add loop
         for(int j=0; j < tagCount; j++){
             double doublePayload = convertToDouble(data.substr(i+(j*8),8));
             std::cout << "DOUBLE: " << doublePayload << std::endl;
@@ -1010,7 +1021,7 @@ TagList *parseList(const std::string &data, int &i)
         i+=(tagCount*8);
         break;
     case 7:
-        //TODO: Add loop
+        //TODO: Add this later, after figuring out how this tag works
         break;
     case 8:
         {
@@ -1048,11 +1059,10 @@ TagCompound *parseCompound(const std::string &data, int &i)
 {
     i++;
     int nlen = int(data[i]);
-    i++;
-    std::string name = data.substr(i,nlen+1);
+    i+=2;
+    std::string name = data.substr(i,nlen);
     i+=nlen;
     std::cout << "COMPOUND: " << name << std::endl;
-    i++;
 
     TagCompound *root = new TagCompound(name);
 
@@ -1237,7 +1247,8 @@ TagCompound parseNBT(const std::string data){
             case 0: //End
             {
                 std::cout << "[END]" << std::endl;
-                root->addChild(new TagEnd());
+                //root->addChild(new TagEnd());
+                return *root;
                 break;
             }
 
