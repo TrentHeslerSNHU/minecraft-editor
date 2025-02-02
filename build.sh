@@ -6,7 +6,7 @@
 # $ brew install cmake
 
 #git submodule add https://github.com/Mojang/leveldb.git leveldb
-#git submodule update --init --recursive
+git submodule update --init --recursive
 mkdir local
 mkdir -p leveldb/build && cd leveldb/build
 cmake -DCMAKE_INSTALL_PREFIX=../../local -DCMAKE_BUILD_TYPE=Release ../../leveldb
