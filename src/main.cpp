@@ -34,19 +34,8 @@ int main(int argc, char *argv[]) {
         leveldb::Slice value = it->value();
 
         if(key.ToString().find("player_") != -1 || key.ToString().find("~local_player") != -1){
-            //tag_NBT item = value;
-            //cout << value.ToString() << std::endl;
-            //cout << key.ToString();
-            ofstream farts;
-            farts.open(key.ToString() + ".nbt");
-            farts << value.ToString();
-            //TagCompound root = getNBT(value.ToString());
-            //int i = 3;
-            //TagCompound *root = getUnnamedCompound(value.ToString(),i);
-            //root->listChildren();
             TagCompound root = parseNBT(value.ToString());
             root.listChildren();
-            std::cout << root.numChildren() << std::endl;
         }
 
     }
