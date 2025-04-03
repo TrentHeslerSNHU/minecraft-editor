@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
         leveldb::Slice key = it->key();
         leveldb::Slice value = it->value();
 
+        //This is an example use case, printing out all of the player data for a given world
         if(key.ToString().find("player_") != -1 || key.ToString().find("~local_player") != -1){
             TagCompound root = parseNBT(value.ToString());
             root.listChildren();
