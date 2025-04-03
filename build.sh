@@ -9,7 +9,7 @@
 git submodule update --init --recursive
 mkdir local
 mkdir -p leveldb/build && cd leveldb/build
-cmake -DCMAKE_INSTALL_PREFIX=../../local -DCMAKE_BUILD_TYPE=Release ../../leveldb DCMAKE_MINIMUM_REQUIRED_VERSION=3.5
+cmake -DCMAKE_INSTALL_PREFIX=../../local -DCMAKE_BUILD_TYPE=Release ../../leveldb -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 make install -j4
 cd ../..
 cmake .
