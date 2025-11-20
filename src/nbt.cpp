@@ -1240,15 +1240,15 @@ TagCompound parseNBT(const std::string data){
 
     TagCompound *root = new TagCompound();
 
-    for(int i=3; i < data.length(); i++){
+    for(int i=0; i < data.length(); i++){
 
         switch (data[i])
         {
             case 0: //End
             {
-                std::cout << "[END]" << std::endl;
-                //root->addChild(new TagEnd());
-                return *root;
+                //std::cout << "[END]" << std::endl;
+                root->addChild(new TagEnd());
+                //return *root;
                 break;
             }
 
