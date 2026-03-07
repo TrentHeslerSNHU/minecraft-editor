@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
             data << value.ToString();
             
             // Parse NBT player data
-            parseNBT(value.ToString());
+            TagCompound* test = parseNBT(value.ToString());
+            std::cout << test->numChildren() << "'" << toString(test) << "'" << std::endl;
         }
 
     }

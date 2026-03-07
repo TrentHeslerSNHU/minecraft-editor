@@ -20,6 +20,7 @@ enum tagType {
     ListTag,
     CompoundTag
 };
+//TODO: Add tag types 11 and 12 (IntArray and LongArray)
 
 //Abstract class
 class NbtTag {
@@ -192,5 +193,6 @@ TagCompound *parseUnnamedCompound(const std::string &, int &);
 
 //======================= The "Main Event" =======================
 TagCompound getNBT(const std::string);
-TagCompound parseNBT(const std::string);
+TagCompound* parseNBT(const std::string);
+std::string toString(TagCompound *);
 #endif
