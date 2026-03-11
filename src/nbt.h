@@ -29,7 +29,7 @@ class NbtTag {
         NbtTag* getNext(){return this->Next;}
         void setNext(NbtTag *newNext){this->Next = newNext;}
         std::string getName(){return *(this->Name);}
-        virtual const std::string getPayload() = 0;
+        //virtual const std::string getPayload() = 0;
     protected:
         short *TagType = nullptr;
         std::string *Name = nullptr;
@@ -148,7 +148,7 @@ class TagCompound : public NbtTag {
         void addChild(NbtTag *);
         void listChildren();
         int numChildren();
-        const std::string getPayload() {return "";};
+        NbtTag* getPayload();
     private:
         NbtTag *Parent = nullptr;
         NbtTag *Children = nullptr;

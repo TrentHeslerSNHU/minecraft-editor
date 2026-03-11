@@ -33,6 +33,7 @@ void TagCompound::addChild(NbtTag *NewChild){
     }
 }
 
+//FIXME: Redo this function with a switch-case for handling tag types
 void TagCompound::listChildren() {
     if(this->Children == nullptr){
         std::cout << "This tag has no children." << std::endl;
@@ -53,7 +54,7 @@ void TagCompound::listChildren() {
                     std::cout << "(" << cmpPtr->numChildren() << ")\n";
                     cmpPtr->listChildren();
                 } else {
-                    std::cout << " = " << nextTag->getPayload() << std::endl;
+                    //std::cout << " = " << nextTag->getPayload() << std::endl;
                 }
             } else {
                 //std::cout << "[END]" << std::endl;
@@ -83,6 +84,10 @@ int TagCompound::numChildren(){
         }
     }
     return i;
+}
+
+NbtTag* TagCompound::getPayload() {
+    return Children;
 }
 
 void TagList::addChild(NbtTag *NewItem){
@@ -126,56 +131,56 @@ void TagList::listChildren(){
             case 1:
             {
                 std::cout << "BYTE: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagByte *)currentItem)->getPayload() << std::endl;
                 break;
             }
             
             case 2:
             {
                 std::cout << "SHORT: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagShort *)currentItem)->getPayload() << std::endl;
                 break;
             }
 
             case 3:
             {
                 std::cout << "INT: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagInt *)currentItem)->getPayload() << std::endl;
                 break;
             }
 
             case 4:
             {
                 std::cout << "LONG: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagLong *)currentItem)->getPayload() << std::endl;
                 break;
             }
 
             case 5:
             {
                 std::cout << "FLOAT: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagFloat *)currentItem)->getPayload() << std::endl;
                 break;
             }
 
             case 6:
             {
                 std::cout << "DOUBLE: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagDouble *)currentItem)->getPayload() << std::endl;
                 break;
             }
 
             case 7:
             {
                 std::cout << "BYTEARRAY: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagByteArray *)currentItem)->getPayload() << std::endl;
                 break;
             }
 
             case 8:
             {
                 std::cout << "STRING: " << currentItem->getName();
-                std::cout << " = " << currentItem->getPayload() << std::endl;
+                std::cout << " = " << ((TagString *)currentItem)->getPayload() << std::endl;
                 break;
             }
 
@@ -1329,7 +1334,7 @@ TagCompound *parseNBT(const std::string data){
 
 std::string toString(TagCompound *data){
     std::string value = "";
-    NbtTag *currentTag = data->getChildren();
+    NbtTag *currentTag = data->getPayload();
     int i = 0;
 
     while (currentTag->getNext() != nullptr)
@@ -1403,11 +1408,9 @@ std::string toString(TagCompound *data){
                 break;
             }
         }**/
-
-        value += currentTag->getType();
         i++;
     }
     
-    std::cout << i << std::endl;
+    std::cout << i;
     return value;
 }
