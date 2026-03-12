@@ -1,7 +1,7 @@
 #include "nbt.h"
 
-bool PRINT_PARSE=true;
-bool PRINT_TAG_BOUNDS=true;
+bool PRINT_PARSE=false;
+bool PRINT_TAG_BOUNDS=false;
 
 /*********************
  * Current Progress: *
@@ -84,10 +84,6 @@ int TagCompound::numChildren(){
         }
     }
     return i;
-}
-
-NbtTag* TagCompound::getPayload() {
-    return Children;
 }
 
 void TagList::addChild(NbtTag *NewItem){
@@ -1332,85 +1328,111 @@ TagCompound *parseNBT(const std::string data){
     return root;
 }
 
-std::string toString(TagCompound *data){
+// To me, from me:This is meant to be a precursor to generating nbt output.
+// This will eventually be used for saving changes to values within the NBT
+// data in the leveldb.
+// Also, use stringsteams?
+std::string toNBT(TagCompound *data){
     std::string value = "";
     NbtTag *currentTag = data->getPayload();
-    int i = 0;
 
     while (currentTag->getNext() != nullptr)
     {
         currentTag = currentTag->getNext();
-        /**switch (currentTag->getType())
+        switch (currentTag->getType())
         {
+            
+            //END
             case 0:
             {
-                value += 'END\n';
+                value += "00";
                 break;
             }
 
+            //BYTE
             case 1:
             {
-                value += 'BYTE:';
-                value += std::string(currentTag->getPayload());
-                value += '\n';
+                value += "01";
+                std::string nlen = std::to_string(currentTag->getName().length());
+                (nlen.length() > 1) ? (nlen = nlen) : (nlen = "0" + nlen);
+                value += nlen;
+                value += currentTag->getName() + "00";
+                value += "0" + std::to_string(((TagByte*) currentTag)->getPayload());
                 break;
             }
 
+            //SHORT
             case 2:
             {
                 break;
             }
 
+            //INT
             case 3:
             {
                 break;
             }
             
-
+            //LONG
             case 4:
             {
                 break;
             }
 
+            //FLOAT
             case 5:
             {
                 break;
             }
             
+            //DOUBLE
             case 6:
             {
                 break;
             }
             
+            //BYTEARRAY
             case 7:
             {
                 break;
             }
             
+            //STRING
             case 8:
             {
                 break;
             }
             
+            //LIST
             case 9:
             {
                 break;
             }
             
+            //COMPOUND
             case 10:
             {
                 break;
             }
             
-            
+            //INTARRAY
+            case 11:
+            {
+                break;
+            }
+
+            //LONGARRAY
+            case 12:
+            {
+                break;
+            }
+
             default:
             {
                 break;
             }
-        }**/
-        i++;
+        }
     }
     
-    std::cout << i;
     return value;
 }

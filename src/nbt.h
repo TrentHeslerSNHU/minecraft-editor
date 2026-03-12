@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <string.h>
 #include <variant>
 #include <vector>
@@ -29,7 +30,6 @@ class NbtTag {
         NbtTag* getNext(){return this->Next;}
         void setNext(NbtTag *newNext){this->Next = newNext;}
         std::string getName(){return *(this->Name);}
-        //virtual const std::string getPayload() = 0;
     protected:
         short *TagType = nullptr;
         std::string *Name = nullptr;
@@ -41,7 +41,6 @@ class NbtTag {
 class TagEnd : public NbtTag {
     public:
         TagEnd(){this->TagType=new short(0); this->Name=new std::string("");}
-        const std::string getPayload() {return "";};
 };
 
 //TYPE 1: Byte
@@ -49,7 +48,7 @@ class TagByte : public NbtTag {
     public:
         TagByte(){this->TagType = new short(1); this->Name=new std::string("TagByte");}
         TagByte(const std::string, unsigned char);
-        const std::string getPayload() {return std::to_string(*Payload);};
+        const unsigned char getPayload() {return *Payload;};
     private:
         unsigned char *Payload = nullptr;
 };
@@ -59,7 +58,7 @@ class TagShort : public NbtTag {
     public:
         TagShort(){this->TagType = new short(2); this->Name=new std::string("TagShort");}
         TagShort(const std::string, short);
-        const std::string getPayload() {return std::to_string(*Payload);};
+        const short getPayload() {return *Payload;};
     private:
         short *Payload = nullptr;
 };
@@ -69,7 +68,7 @@ class TagInt : public NbtTag {
     public:
         TagInt(){this->TagType = new short(3); this->Name=new std::string("TagInt");}
         TagInt(const std::string, int);
-        const std::string getPayload() {return std::to_string(*Payload);};
+        const int getPayload() {return *Payload;};
     private:
         int *Payload = nullptr;
 };
@@ -79,7 +78,7 @@ class TagLong : public NbtTag {
     public:
         TagLong(){this->TagType = new short(4); this->Name=new std::string("TagLong");}
         TagLong(const std::string, long);
-        const std::string getPayload() {return std::to_string(*Payload);};
+        const long getPayload() {return *Payload;};
     private:
         long *Payload = nullptr;
 };
@@ -89,7 +88,7 @@ class TagFloat : public NbtTag {
     public:
         TagFloat(){this->TagType = new short(5); this->Name=new std::string("TagFloat");}
         TagFloat(const std::string, float);
-        const std::string getPayload() {return std::to_string(*Payload);};
+        const float getPayload() {return *Payload;};
     private:
         float *Payload = nullptr;
 };
@@ -99,7 +98,7 @@ class TagDouble : public NbtTag {
     public:
         TagDouble(){this->TagType = new short(6); this->Name=new std::string("TagDouble");}
         TagDouble(const std::string, double);
-        const std::string getPayload() {return std::to_string(*Payload);};
+        const double getPayload() {return *Payload;};
     private:
         double *Payload = nullptr;
 };
@@ -133,7 +132,7 @@ class TagList : public NbtTag {
         void addChild(NbtTag *);
         void listChildren();
         int numChildren();
-        const std::string getPayload() {return "";};
+        NbtTag* getPayload() {return Children;};
     private:
         unsigned char *itemType;
         int *itemQty;
@@ -148,7 +147,7 @@ class TagCompound : public NbtTag {
         void addChild(NbtTag *);
         void listChildren();
         int numChildren();
-        NbtTag* getPayload();
+        NbtTag* getPayload() {return Children;};
     private:
         NbtTag *Parent = nullptr;
         NbtTag *Children = nullptr;
@@ -194,5 +193,5 @@ TagCompound *parseUnnamedCompound(const std::string &, int &);
 //======================= The "Main Event" =======================
 TagCompound getNBT(const std::string);
 TagCompound* parseNBT(const std::string);
-std::string toString(TagCompound *);
+std::string toNBT(TagCompound *);
 #endif
