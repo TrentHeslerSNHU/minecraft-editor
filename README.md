@@ -2,6 +2,15 @@
 ## Description ##
 This project is intended to be a free and open source editor for Minecraft: Bedrock Edition save files. It is in the early stages of development, but currently allows you to view player data from a Minecraft world, in a human-readable format.
 
+## Build Requirements ##
+This project requires the Snappy library and CMake. All other dependencies should be included in this repo. (I may eventually add Snappy as a submodule, for simplicity's sake.)
+
+## Building ##
+Simply execute:
+cmake .
+make
+
+
 ## Roadmap ##
 * ✔ - Allow users to view data values from a Minecraft: Bedrock Edition world
 * ✘ - Allow users to edit data values from a Minecraft: Bedrock Edition world

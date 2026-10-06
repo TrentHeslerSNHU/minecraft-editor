@@ -5,18 +5,15 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include_directories(include local/include)
+set(LEVELDB_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LEVELDB_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
+add_subdirectory(leveldb EXCLUDE_FROM_ALL)
+add_subdirectory(snappy EXCLUDE_FROM_ALL)
+
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_executable(minecraft-editor ${SOURCES})
 
 find_package(Threads REQUIRED)
-find_library (LEVELDB
-    NAMES leveldb libleveldb # what to look for
-    HINTS ${CMAKE_SOURCE_DIR}/local/lib # where to look
-    NO_DEFAULT_PATH) # do not search system default paths
 
-find_library (SNAPPY
-    NAMES snappy libsnappy) # what to look for
-
-target_link_libraries(minecraft-editor PRIVATE Threads::Threads ${LEVELDB} ${SNAPPY})
+target_link_libraries(minecraft-editor PRIVATE Threads::Threads leveldb snappy)
 
